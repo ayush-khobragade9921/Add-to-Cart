@@ -1,27 +1,23 @@
 let buttons = document.querySelectorAll("button");
 
-let cart = document.querySelector(".cart")
+let cart = document.querySelector(".cart");
 
 let cartTotal = 0;
 
-let totalShowSection = document.createElement("div");
+let totalDisplay = document.createElement("div");
+let totalDisplaytext = document.createElement("span");
+totalDisplaytext.textContent = "Total";
+let totalDisplayprice = document.createElement("strong");
 
-totalShowSection.classList.add("cart-total");
 
-let spanOfTotal = document.createElement("span");
-
-spanOfTotal.textContent = "Total";
-
-let strongOfTotal = document.createElement("strong");
-
-totalShowSection.append(spanOfTotal, strongOfTotal);
+totalDisplay.append(totalDisplaytext, totalDisplayprice);
 
 
 let proceedButton = document.createElement("button");
-
 proceedButton.classList.add("checkout-btn");
+proceedButton.innerText = "Proceed to Checkout";
 
-proceedButton.textContent = "Proceed to Checkout";
+
 
 
 buttons.forEach(button => {
@@ -29,104 +25,71 @@ buttons.forEach(button => {
     button.addEventListener("click", function () {
 
         cart.style.display = "block";
-
         let service = button.parentElement.parentElement;
 
-        let servicname = service.querySelector("h3").textContent;
+        let servicename = service.querySelector("h3").textContent;
+        let price = Number(service.querySelector("p").textContent.replace("₹", ""));
+        let quantity = Number(service.querySelector("input").value);
 
-        let price = service.querySelector("p").textContent.replace("₹", "");
-
-        let quantity = service.querySelector("input").value;
-
-        let total = Number(price * quantity);
+        console.log(servicename);
+        console.log(price);
+        console.log(quantity);
 
 
-        // Cart me pehle se items ko check karo
-        let cartItems = document.querySelectorAll(".cart-item");
+        let singleServiceTotalPrice = Number(price * quantity)
 
+        console.log(singleServiceTotalPrice);
+
+        let cartItem2 = document.querySelectorAll(".cart-item");
         let alreadyAdded = false;
 
+        cartItem2.forEach(item => {
+            let alreadyexisting = item.querySelector("h3").textContent;
 
-        cartItems.forEach(item => {
-
-            let existingName = item.querySelector("h3").textContent;
-
-
-            if (existingName.includes(servicname)) {
-
+            if (alreadyexisting.includes(servicename)) {
                 alreadyAdded = true;
 
-                let existingQuantity = item
-                    .querySelector("p")
-                    .textContent
-                    .split(":")[1];
+                let updatedQuantity = Number(item.querySelector("p").textContent.split(":")[1]);
 
-                let newQuantity =
-                    Number(existingQuantity) + Number(quantity);
+                let newquantity = Number(quantity) + Number(updatedQuantity);
 
+                let newtotalSingleServiceTotalPrice = Number(price) * Number(newquantity);
 
-                let newTotal = Number(price) * newQuantity;
+                item.querySelector("p").textContent = `quantity: ${newquantity}`;
 
-
-                item.querySelector("p").textContent =
-                    `Quntity: ${newQuantity}`;
-
-                item.querySelector("strong").textContent =
-                    `₹${newTotal}`;
+                item.querySelector("strong").textContent = `₹${newtotalSingleServiceTotalPrice}`
 
 
                 cartTotal += Number(price) * Number(quantity);
-
-                strongOfTotal.textContent = `₹${cartTotal}`;
+                totalDisplayprice.textContent = `₹${cartTotal}`;
             }
+        })
 
-        });
-
-
-        // Agar service pehli baar add hui hai
         if (!alreadyAdded) {
-
-            cartTotal += total;
-
-            strongOfTotal.textContent = `₹${cartTotal}`;
-
-
             let cartItem = document.createElement("div");
-
             cartItem.classList.add("cart-item");
 
-
             let cartInfo = document.createElement("div");
-
             cartInfo.classList.add("cart-info");
 
+            let serviceNameInCart = document.createElement("h3");
+            serviceNameInCart.textContent = servicename;
 
-            let nameOfService = document.createElement("h3");
+            let quantityInCart = document.createElement("p");
+            quantityInCart.textContent = `quantity: ${quantity}`;
 
-            nameOfService.textContent = servicname;
+            let priceInCart = document.createElement("strong");
+            priceInCart.textContent = `₹${price}`;
 
-
-            let quantityOfService = document.createElement("p")
-
-            quantityOfService.textContent =
-                `Quntity: ${quantity}`;
-
-
-            let strong = document.createElement("strong");
-
-            strong.textContent = `₹${total}`;
+            cartTotal += Number(price) * Number(quantity);
+            cartInfo.append(serviceNameInCart, quantityInCart);
+            cartItem.append(cartInfo, priceInCart);
+            cart.append(cartItem, totalDisplay, proceedButton);
 
 
-            cartInfo.append(nameOfService, quantityOfService);
-
-            cartItem.append(cartInfo, strong);
-
-            cart.append(
-                cartItem,
-                totalShowSection,
-                proceedButton
-            );
+            totalDisplayprice.textContent = `₹${cartTotal}`;
         }
+
 
     })
 
