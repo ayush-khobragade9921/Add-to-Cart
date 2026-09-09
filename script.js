@@ -1,88 +1,133 @@
-let buttons = document.querySelectorAll(".btn");
+let buttons = document.querySelectorAll("button");
 
-let cart = document.querySelector(".cart");
-
-
-// ---------------- TOTAL ----------------
+let cart = document.querySelector(".cart")
 
 let cartTotal = 0;
 
-let total = document.createElement("div");
-total.classList.add("cart-total");
+let totalShowSection = document.createElement("div");
 
-let totalspan = document.createElement("span");
-totalspan.textContent = "Total";
+totalShowSection.classList.add("cart-total");
 
-let totalstrong = document.createElement("strong");
-totalstrong.textContent = "₹0";
+let spanOfTotal = document.createElement("span");
 
-total.append(totalspan, totalstrong);
+spanOfTotal.textContent = "Total";
 
+let strongOfTotal = document.createElement("strong");
 
-// ---------------- CHECKOUT BUTTON ----------------
+totalShowSection.append(spanOfTotal, strongOfTotal);
+
 
 let proceedButton = document.createElement("button");
+
 proceedButton.classList.add("checkout-btn");
+
 proceedButton.textContent = "Proceed to Checkout";
 
-
-// ---------------- ADD TO CART ----------------
 
 buttons.forEach(button => {
 
     button.addEventListener("click", function () {
 
+        cart.style.display = "block";
+
         let service = button.parentElement.parentElement;
 
-        let name = service.querySelector("h3").textContent;
+        let servicname = service.querySelector("h3").textContent;
 
-        let price = Number(
-            service.querySelector("p").textContent.replace("₹", "")
-        );
+        let price = service.querySelector("p").textContent.replace("₹", "");
 
-        let quantity = Number(
-            service.querySelector("input").value
-        );
+        let quantity = service.querySelector("input").value;
+
+        let total = Number(price * quantity);
 
 
-        // Individual item ka total
-        let totalprice = price * quantity;
+        // Cart me pehle se items ko check karo
+        let cartItems = document.querySelectorAll(".cart-item");
+
+        let alreadyAdded = false;
 
 
-        // Pure cart ka total
-        cartTotal += totalprice;
+        cartItems.forEach(item => {
+
+            let existingName = item.querySelector("h3").textContent;
 
 
-        // Total ki value update
-        totalstrong.textContent = `₹${cartTotal}`;
+            if (existingName.includes(servicname)) {
+
+                alreadyAdded = true;
+
+                let existingQuantity = item
+                    .querySelector("p")
+                    .textContent
+                    .split(":")[1];
+
+                let newQuantity =
+                    Number(existingQuantity) + Number(quantity);
 
 
-        // ---------------- CART ITEM ----------------
-
-        let cartItem = document.createElement("div");
-        cartItem.classList.add("cart-item");
-
-        let cartInfo = document.createElement("div");
-        cartInfo.classList.add("cart-info");
-
-        let serviceName = document.createElement("h3");
-        serviceName.textContent = name;
-
-        let serviceQuantity = document.createElement("p");
-        serviceQuantity.textContent = `Qty: ${quantity}`;
-
-        let priceValue = document.createElement("strong");
-        priceValue.textContent = `₹${totalprice}`;
+                let newTotal = Number(price) * newQuantity;
 
 
-        cartInfo.append(serviceName, serviceQuantity);
+                item.querySelector("p").textContent =
+                    `Quntity: ${newQuantity}`;
 
-        cartItem.append(cartInfo, priceValue);
+                item.querySelector("strong").textContent =
+                    `₹${newTotal}`;
 
 
-        // Cart mein item + total + checkout
-        cart.append(cartItem, total, proceedButton);
+                cartTotal += Number(price) * Number(quantity);
 
-    });
+                strongOfTotal.textContent = `₹${cartTotal}`;
+            }
 
-});
+        });
+
+
+        // Agar service pehli baar add hui hai
+        if (!alreadyAdded) {
+
+            cartTotal += total;
+
+            strongOfTotal.textContent = `₹${cartTotal}`;
+
+
+            let cartItem = document.createElement("div");
+
+            cartItem.classList.add("cart-item");
+
+
+            let cartInfo = document.createElement("div");
+
+            cartInfo.classList.add("cart-info");
+
+
+            let nameOfService = document.createElement("h3");
+
+            nameOfService.textContent = servicname;
+
+
+            let quantityOfService = document.createElement("p")
+
+            quantityOfService.textContent =
+                `Quntity: ${quantity}`;
+
+
+            let strong = document.createElement("strong");
+
+            strong.textContent = `₹${total}`;
+
+
+            cartInfo.append(nameOfService, quantityOfService);
+
+            cartItem.append(cartInfo, strong);
+
+            cart.append(
+                cartItem,
+                totalShowSection,
+                proceedButton
+            );
+        }
+
+    })
+
+})

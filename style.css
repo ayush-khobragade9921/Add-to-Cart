@@ -100,7 +100,7 @@ body {
     background: white;
     border-radius: 15px;
     padding: 25px;
-
+    display: none;
     height: fit-content;
 
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
